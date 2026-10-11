@@ -1,0 +1,36 @@
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    # Requiere generar un certificado, ej: keytool -genkeypair -alias inventario -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
+    key-store: classpath:keystore.p12
+    key-store-password: MyKey2025
+    key-store-type: PKCS12
+    key-alias: https_cert
+
+spring:
+  application:
+    name: inventario
+  datasource:
+    url: jdbc:mariadb://localhost:3306/inventario
+    username: usrInveAPP
+    password: user123
+    driver-class-name: org.mariadb.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate # Valida que la BD coincida con las entidades sin alterarla
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false # Cambiar a true para depurar consultas en consola
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+  
+# Configuración personalizada para la gestión de tokens
+jwt:
+  secret: HolaMundoInventarioDemoParaSoftekJavero
+  expiration-ms: 3600000 # 1 hora
+  refresh-expiration-ms: 86400000 # 24 horas
+  issuer: com.idm.demos.inventario
+
+      

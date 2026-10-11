@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="LOG_PATH" value="logs" />
+    <property name="LOG_FILE" value="${LOG_PATH}/inventario.log" />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- Patrón de rotación: un archivo por día con índice -->
+            <fileNamePattern>${LOG_PATH}/inventario-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- Límite de tamaño por archivo -->
+            <maxFileSize>10MB</maxFileSize>
+            <!-- Límite de retención de 20 días -->
+            <maxHistory>20</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <!-- Patrón: Fecha y Hora | Nivel | Clase | Mensaje -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender de consola (opcional, útil para desarrollo) -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
+    </root>
+    
+    <!-- Configuración específica de nivel para el paquete del proyecto -->
+    <logger name="com.idm.demos" level="DEBUG" />
+</configuration>
