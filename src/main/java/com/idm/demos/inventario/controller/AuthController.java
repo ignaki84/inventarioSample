@@ -3,7 +3,6 @@ package com.idm.demos.inventario.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,8 +34,9 @@ public class AuthController {
     			|| Utils.isDataEmpty(requestDto.getPassword()) )
     		throw new IllegalArgumentException("Datos de usuario requeridos.");
 
-        // 1. Validar credenciales reales usando Spring Security
-        Authentication authentication = authenticationManager.authenticate(
+        // Valida credenciales usando Spring Security
+        //Authentication authentication = 
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(requestDto.getIdUsuario(), requestDto.getPassword())
         );
 

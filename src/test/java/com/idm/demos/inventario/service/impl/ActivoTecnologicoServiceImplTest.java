@@ -57,15 +57,24 @@ class ActivoTecnologicoServiceImplTest {
     private CatEstadoProducto estadoSimulado;
     private ActivoTecnologicoRequestDto requestDto;
 
+	private static final String ACCION_ALTA 			= "Registrar activos";
+    private static final String ACCION_ACTUALIZACION	= "Actualizar activos";
+    private static final String ACCION_BUSQUEDA			= "Consultar informacion";
+    private static final String ACCION_ACT_ESTADO		= "Cambio estado";
+//    private static final String ACCION_BAJA				= "Baja activos";
+    private static final String ACCION_REPORTE			= "Exportar informacion";
+    
     @BeforeEach
     void setUp() {
         // Configurar roles y usuario
-        CatAccion accionAlta = new CatAccion(); accionAlta.setNombre("ALTA_ACTIVOS");
-        CatAccion accionActualizar = new CatAccion(); accionActualizar.setNombre("ACTUALIZAR_ACTIVOS");
-        CatAccion accionBusqueda = new CatAccion(); accionBusqueda.setNombre("BUSQUEDA_ACTIVOS");
+        CatAccion accionAlta = new CatAccion(); accionAlta.setNombre(ACCION_ALTA);
+        CatAccion accionActualizar = new CatAccion(); accionActualizar.setNombre(ACCION_ACTUALIZACION);
+        CatAccion accionBusqueda = new CatAccion(); accionBusqueda.setNombre(ACCION_BUSQUEDA);
+        CatAccion accionReporte = new CatAccion(); accionReporte.setNombre(ACCION_REPORTE);
+        CatAccion accionEdoActualiza = new CatAccion(); accionEdoActualiza.setNombre(ACCION_ACT_ESTADO);
 
         CatRol rol = new CatRol();
-        rol.setAcciones(Set.of(accionAlta, accionActualizar, accionBusqueda));
+        rol.setAcciones(Set.of(accionAlta, accionActualizar, accionBusqueda,accionReporte,accionEdoActualiza));
 
         usuarioSimulado = new Usuario();
         usuarioSimulado.setIdUsuario("USR-001");
@@ -98,8 +107,7 @@ class ActivoTecnologicoServiceImplTest {
         when(activoRepository.existsBySerie("SN-12345")).thenReturn(false);
         when(categoriaRepository.findById(1)).thenReturn(Optional.of(categoriaSimulada));
         when(estadoRepository.findById(1)).thenReturn(Optional.of(estadoSimulado));
-        when(activoRepository.findMaxFolioByCategoriaAndAnio(1, "LAP", anioActual))
-                .thenReturn("LAP" + anioActual + "000005");
+        when(activoRepository.obtenerSiguienteValorSecuencia()).thenReturn(Long.valueOf(6));
         
         when(activoRepository.save(any(ActivoTecnologico.class))).thenAnswer(i -> i.getArgument(0));
 

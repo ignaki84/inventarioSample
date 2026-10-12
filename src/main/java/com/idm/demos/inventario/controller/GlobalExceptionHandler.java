@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.idm.demos.inventario.controller.response.ApiResponse;
@@ -34,7 +35,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
     
-    //TODO: UsernameNotFoundException
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleSecurityException(UsernameNotFoundException ex) {
+        ApiResponse<Void> response = new ApiResponse<>(
+                HttpStatus.FORBIDDEN.value(),
+                //ex.getMessage(),
+                "Error de usuario",
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+    }
     
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException ex) {

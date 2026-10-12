@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class LoginRequestDto {
 	private String idUsuario;
-	private String password; //TODO: que viaje encriptado
+	private String password;
 
 }

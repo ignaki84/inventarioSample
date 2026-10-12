@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.idm.demos.inventario.model.ActivoTecnologicoView;
+import com.idm.demos.inventario.utilidades.Utils;
 
 import jakarta.persistence.criteria.Predicate;
 
@@ -18,19 +19,18 @@ public class ActivoTecnologicoSpecification
             BigDecimal costoMin, BigDecimal costoMax)
 	{
 		// agregar likes para consultas de elementos similares y rango de costos
-		// TODO: usar la clase Utils??
 		return (root, query, cb) -> {
 			List<Predicate> predicates = new ArrayList<>();
-			if(serie!=null && !serie.isBlank()) {	
+			if( !Utils.isDataEmpty(serie) ) {	
 				predicates.add(cb.like(root.get("serie"), "%"+serie+"%"));
 			}
-			if(marca!=null && !marca.isBlank()) {
+			if( !Utils.isDataEmpty(marca) ) {
 				predicates.add(cb.like(root.get("marca"), "%"+marca+"%"));
 			}
-			if (estado != null && !estado.isBlank()) {
+			if ( !Utils.isDataEmpty(estado) ) {
                 predicates.add(cb.equal(root.get("estado"), estado));
             }
-            if (categoria != null && !categoria.isBlank()) {
+            if ( !Utils.isDataEmpty(categoria) ) {
                 predicates.add(cb.equal(root.get("categoria"), categoria));
             }
             if (costoMin != null) {

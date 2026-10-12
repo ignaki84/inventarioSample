@@ -47,9 +47,13 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
 //	private static final String UPDATE_REG	= "Cambio de datos solicitado mediante APIs";
 	private static final String UPDATE_STAT	= "Cambio de estado solicitado mediante APIs";
 	
-	private static final String ACCION_ALTA = "ALTA_ACTIVOS";
-    private static final String ACCION_ACTUALIZACION = "ACTUALIZAR_ACTIVOS";
-    private static final String ACCION_BUSQUEDA = "BUSQUEDA_ACTIVOS";
+	private static final String ACCION_ALTA 			= "Registrar activos";
+    private static final String ACCION_ACTUALIZACION	= "Actualizar activos";
+    private static final String ACCION_BUSQUEDA			= "Consultar informacion";
+    private static final String ACCION_ACT_ESTADO		= "Cambio estado";
+//    private static final String ACCION_BAJA				= "Baja activos";
+    private static final String ACCION_REPORTE			= "Exportar informacion";
+    
 	
     private static final Integer BAJA = 4;
 	
@@ -123,7 +127,7 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
 	@Transactional
 	public ActivoTecnologico cambiarEstado(String idProducto, Integer idNuevoEstado, String idUsuario) 
 	{
-		Usuario usuario = validarPermisos(idUsuario, ACCION_ACTUALIZACION);
+		Usuario usuario = validarPermisos(idUsuario, ACCION_ACT_ESTADO);
 		
 		ActivoTecnologico activo = activoRepo.findById(idProducto)
                 .orElseThrow(() -> new IllegalArgumentException("Activo no encontrado"));
@@ -157,7 +161,7 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
     @Transactional(readOnly = true)
 	public ReporteExportacionDto generarReporteAuditoria(String serie, String marca, String estado, String categoria,
 			BigDecimal costoMin, BigDecimal costoMax, String idUsuario){
-		Usuario usuario = validarPermisos(idUsuario, ACCION_BUSQUEDA);
+		Usuario usuario = validarPermisos(idUsuario, ACCION_REPORTE);
 		
 		Specification<ActivoTecnologicoView> spec = ActivoTecnologicoSpecification.buildFilter(serie, marca, estado, categoria, costoMin, costoMax);
         List<ActivoTecnologicoView> activos = vistaRepo.findAll(spec);
@@ -168,21 +172,12 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         return new ReporteExportacionDto(fileName, base64File);
 	}
 	
-	//TODO:mejora esto
 	private String generarFolio(CatCategoria categoria) {
         String prefijo = categoria.getCodPref();
         String anio = String.valueOf(Year.now().getValue());
+        Long consecutivo = activoRepo.obtenerSiguienteValorSecuencia()%1000000;
         
-        String maxFolio = activoRepo.findMaxFolioByCategoriaAndAnio(categoria.getIdCategoria(), prefijo, anio);
-        
-        int consecutivo = 1;
-        if (maxFolio != null) {
-            // El formato es PREFIJO+AÑO+CONSECUTIVO. Se extrae la subcadena final para incrementar.
-            String secuenciaStr = maxFolio.substring(prefijo.length() + 4);
-            consecutivo = Integer.parseInt(secuenciaStr) + 1;
-        }
-        
-        // Asegura formato de 6 dígitos rellenados con ceros a la izquierda (ej. LAP2026000001)
+        // Asegura formato de 6 dígitos rellenados con ceros a la izquierda
         return String.format("%s%s%06d", prefijo, anio, consecutivo);
     }
 	
@@ -200,7 +195,6 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
     }
 	
 	
-	//TODO validar con la informacion de la BD
 	private Usuario validarPermisos(String idUsuario, String accionRequerida) {
         Usuario usuario = usuarioRepo.findById(idUsuario)
                 .orElseThrow(() -> new SecurityException("Usuario no identificado en el sistema."));
