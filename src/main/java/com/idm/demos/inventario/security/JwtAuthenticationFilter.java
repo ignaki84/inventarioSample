@@ -2,12 +2,14 @@ package com.idm.demos.inventario.security;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import com.idm.demos.inventario.service.AuthService;
 
@@ -15,14 +17,22 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 @Component
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	
 	private final JwtUtil jwtUtil;
 	private final AuthService authService;
+	private final HandlerExceptionResolver exceptionResolver;
+	
+	public JwtAuthenticationFilter(JwtUtil jwtUtil,
+			AuthService authService,
+			@Qualifier("handlerExceptionResolver") HandlerExceptionResolver exceptionResolver) {
+		this.jwtUtil = jwtUtil;
+		this.authService = authService;
+		this.exceptionResolver = exceptionResolver;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -52,11 +62,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
+            
         } catch (Exception e) {
             // En caso de sesión revocada, expirada o token manipulado
             System.out.println("Acceso denegado - Token o Sesión inválida: " + e.getMessage());
+            exceptionResolver.resolveException(request, response, null, e);
+            return;
         }
-
+        
         filterChain.doFilter(request, response);
     }
 }

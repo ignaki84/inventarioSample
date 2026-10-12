@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.idm.demos.inventario.controller.response.ApiResponse;
+import com.idm.demos.inventario.model.CatAccion;
 import com.idm.demos.inventario.model.CatCategoria;
 import com.idm.demos.inventario.model.CatEstadoProducto;
 import com.idm.demos.inventario.service.CatalogoService;
@@ -30,6 +31,12 @@ public class CatalogoController {
     public ResponseEntity<ApiResponse<List<CatEstadoProducto>>> obtenerEstados() {
         List<CatEstadoProducto> estados = catalogoService.obtenerEstados();
         return ResponseEntity.ok(ApiResponse.success("Estados obtenidos con éxito", estados));
+    }
+	
+	@GetMapping("/acciones")
+    public ResponseEntity<ApiResponse<List<CatAccion>>> obtenerAcciones() {
+        List<CatAccion> acciones = catalogoService.obtenerAcciones();
+        return ResponseEntity.ok(ApiResponse.success("Acciones obtenidas con éxito", acciones));
     }
 
 }

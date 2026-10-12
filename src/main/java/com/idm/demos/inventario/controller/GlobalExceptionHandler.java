@@ -6,9 +6,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.idm.demos.inventario.controller.response.ApiResponse;
 
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(IllegalArgumentException.class)
@@ -20,6 +22,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 null
         );
+        System.out.println("Ocurrio un error: "+ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -28,10 +31,11 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.FORBIDDEN.value(),
                 //ex.getMessage(),
-                "Error de seguridad",
+                "Error de permisos",
                 LocalDateTime.now(),
                 null
         );
+        System.out.println("Ocurrio un error: "+ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
     
@@ -44,18 +48,20 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 null
         );
+        System.out.println("Ocurrio un error: "+ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
     
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleRuntimeException(Exception ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 //ex.getMessage(),
-                "Error al generar la auditoria",
+                "Error general",
                 LocalDateTime.now(),
                 null
         );
+        System.out.println("Ocurrio un error: "+ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 

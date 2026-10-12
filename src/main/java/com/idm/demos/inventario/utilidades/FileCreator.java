@@ -14,20 +14,23 @@ import com.idm.demos.inventario.model.ActivoTecnologicoView;
 
 public class FileCreator {
 	
+	private final String CSV_FILE = "registros.csv";
+	private final String TXT_FILE = "auditoria.txt";
+	
 	public String zipAuditFile(List<ActivoTecnologicoView> activos, String user) 
 			throws RuntimeException
 	{
-		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	             ZipOutputStream zos = new ZipOutputStream(baos)) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try ( ZipOutputStream zos = new ZipOutputStream(baos)) {
 			
 			//archivo de excel
-			ZipEntry csvEntry = new ZipEntry("registros.csv");
+			ZipEntry csvEntry = new ZipEntry(CSV_FILE);
             zos.putNextEntry(csvEntry);
             zos.write(csvData(activos).getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();
             
             //archivo de auditoria
-            ZipEntry txtEntry = new ZipEntry("auditoria.txt");
+            ZipEntry txtEntry = new ZipEntry(TXT_FILE);
             zos.putNextEntry(txtEntry);
             zos.write(auditData(user,activos.size()).getBytes(StandardCharsets.UTF_8));
             zos.closeEntry();
@@ -35,10 +38,14 @@ public class FileCreator {
             // Finalizar la compresión del ZIP
             zos.finish();
 		
-			return Base64.getEncoder().encodeToString(baos.toByteArray());
+			
 		} catch (IOException e) {
             throw new RuntimeException("Error al generar el archivo ZIP de auditoría: " + e.getMessage(), e);
         }
+		
+		String base64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+		
+		return base64;
 	}
 	
 	private String csvData(List<ActivoTecnologicoView> activos) {

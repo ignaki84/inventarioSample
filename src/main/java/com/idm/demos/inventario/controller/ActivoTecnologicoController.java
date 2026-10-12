@@ -2,6 +2,7 @@ package com.idm.demos.inventario.controller;
 
 import java.math.BigDecimal;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.idm.demos.inventario.controller.request.ActivoTecUpdateRequestDTO;
 import com.idm.demos.inventario.controller.request.ActivoTecnologicoRequestDto;
 import com.idm.demos.inventario.controller.request.CambioEstadoRequestDTO;
 import com.idm.demos.inventario.controller.response.ApiResponse;
 import com.idm.demos.inventario.controller.response.ReporteExportacionDto;
-import com.idm.demos.inventario.model.ActivoTecnologico;
 import com.idm.demos.inventario.model.ActivoTecnologicoView;
 import com.idm.demos.inventario.service.ActivoTecnologicoService;
 
@@ -52,20 +53,20 @@ public class ActivoTecnologicoController {
     }
 	
 	@PostMapping
-    public ResponseEntity<ApiResponse<ActivoTecnologico>> registrarActivo(
+    public ResponseEntity<ApiResponse<ActivoTecnologicoView>> registrarActivo(
     		@RequestBody ActivoTecnologicoRequestDto requestDto) {
         String idUsuario = obtenerIdUsuarioDelToken();
-        ActivoTecnologico guardado = activoService.registrarActivo(requestDto, idUsuario);
+        ActivoTecnologicoView guardado = activoService.registrarActivo(requestDto, idUsuario);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.created("Activo registrado con éxito", guardado));
     }
 	
 	@PutMapping("/{idProducto}")
-    public ResponseEntity<ApiResponse<ActivoTecnologico>> actualizarActivo(
+    public ResponseEntity<ApiResponse<ActivoTecnologicoView>> actualizarActivo(
             @PathVariable String idProducto, 
-            @RequestBody ActivoTecnologicoRequestDto requestDto) {
+            @RequestBody ActivoTecUpdateRequestDTO requestDto) {
         String idUsuario = obtenerIdUsuarioDelToken();
-        ActivoTecnologico actualizado = activoService.actualizarActivo(idProducto, requestDto, idUsuario);
+        ActivoTecnologicoView actualizado = activoService.actualizarActivo(idProducto, requestDto, idUsuario);
         return ResponseEntity.ok(ApiResponse.success("Activo actualizado con éxito", actualizado));
     }
 	
@@ -86,7 +87,7 @@ public class ActivoTecnologicoController {
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) BigDecimal costoMin,
             @RequestParam(required = false) BigDecimal costoMax,
-            @PageableDefault(size = 10, sort = "creacion", direction = Sort.Direction.DESC) Pageable pageable) {
+            @ParameterObject @PageableDefault(size = 10, sort = "creacion", direction = Sort.Direction.DESC) Pageable pageable) {
         String idUsuario = obtenerIdUsuarioDelToken();
         Page<ActivoTecnologicoView> resultados = activoService.buscarActivos(
                 serie, marca, estado, categoria, costoMin, costoMax, pageable, idUsuario);

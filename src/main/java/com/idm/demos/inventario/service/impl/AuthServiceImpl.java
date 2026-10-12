@@ -58,6 +58,8 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	@Transactional
 	public AuthResponseDto crearSesion(String idUsuario, String ip, String userAgent) {
+		//TODO:invalida la sesion anterior
+		
 		Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
 		

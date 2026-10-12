@@ -118,6 +118,11 @@ CREATE TABLE BITACORA
     FOREIGN KEY (FN_IDACCION) REFERENCES CAT_ACCION(FN_IDACCION)
 );
 
+CREATE SEQUENCE seq_product_id
+START WITH 1
+INCREMENT BY 1
+CACHE 1000;
+
 -- Vista para consulta de activos tecnológicos
 CREATE VIEW v_activos_tecnologicos AS
 SELECT 

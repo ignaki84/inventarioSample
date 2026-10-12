@@ -28,9 +28,11 @@ public class SecurityConfig {
 	            .requestMatchers(
 	                    "/v3/api-docs/**",
 	                    "/swagger-ui/**",
-	                    "/swagger-ui.html",
-	                    "/api/v1/auth/**" // Endpoint para hacer login y obtener el token
+	                    "/swagger-ui.html"
 	            ).permitAll()
+	            .requestMatchers("/api/v1/auth/**" // Endpoint para hacer login y obtener el token)
+	            ).permitAll()
+	            .requestMatchers("/error").permitAll()
 	            // Cualquier otra ruta requiere autenticación
 	            .anyRequest().authenticated()
 	        )

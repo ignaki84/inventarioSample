@@ -40,7 +40,8 @@ public class ActivoTecnologicoSpecification
                 predicates.add(cb.lessThanOrEqualTo(root.get("costo"), costoMax));
             }
             
-			return cb.and(predicates.toArray(new Predicate[0]));
+//            if( predicates.size() > 0 )
+            	return cb.and(predicates.toArray(new Predicate[0]));
 		};
 	}
 

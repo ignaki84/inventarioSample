@@ -9,6 +9,6 @@ public class ActivoTecnologicoRequestDto {
 	private String serie;
     private String marca;
     private Integer idCategoria;
-    private Integer idEstatus;
+    //private Integer idEstatus;
     private BigDecimal costo;
 }

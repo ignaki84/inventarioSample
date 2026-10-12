@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.idm.demos.inventario.controller.request.ActivoTecUpdateRequestDTO;
 import com.idm.demos.inventario.controller.request.ActivoTecnologicoRequestDto;
 import com.idm.demos.inventario.controller.response.ReporteExportacionDto;
 import com.idm.demos.inventario.model.ActivoTecnologico;
@@ -60,7 +61,7 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
 	
 	@Override
 	@Transactional
-	public ActivoTecnologico registrarActivo(ActivoTecnologicoRequestDto requestDto, String idUsuario) 
+	public ActivoTecnologicoView registrarActivo(ActivoTecnologicoRequestDto requestDto, String idUsuario) 
 	{	
 		Usuario usuario = validarPermisos(idUsuario, ACCION_ALTA);
 		
@@ -91,12 +92,12 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         ActivoTecnologico guardado = activoRepo.save(activo);
         registrarHistorial(guardado, null, guardado.getEstadoProducto(), usuario, NEW_REG);
         
-        return guardado;
+        return buildActivoView(guardado);
 	}
 
 	@Override
 	@Transactional
-	public ActivoTecnologico actualizarActivo(String idProducto, ActivoTecnologicoRequestDto requestDto, String idUsuario) 
+	public ActivoTecnologicoView actualizarActivo(String idProducto, ActivoTecUpdateRequestDTO requestDto, String idUsuario) 
 	{
 		validarPermisos(idUsuario, ACCION_ACTUALIZACION);
         
@@ -120,12 +121,12 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         validarDatosEntrada(existente, false);
         
         //TODO registra bitacora
-        return activoRepo.save(existente);
+        return buildActivoView(activoRepo.save(existente));
 	}
 
 	@Override
 	@Transactional
-	public ActivoTecnologico cambiarEstado(String idProducto, Integer idNuevoEstado, String idUsuario) 
+	public ActivoTecnologicoView cambiarEstado(String idProducto, Integer idNuevoEstado, String idUsuario) 
 	{
 		Usuario usuario = validarPermisos(idUsuario, ACCION_ACT_ESTADO);
 		
@@ -145,7 +146,7 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         activoRepo.save(activo);
 
         registrarHistorial(activo, estadoAnterior, nuevoEstado, usuario, UPDATE_STAT);
-        return activo;
+        return buildActivoView(activo);
 	}
 
 	@Override
@@ -208,6 +209,20 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         return usuario;
     }
 	
+	private ActivoTecnologicoView buildActivoView(ActivoTecnologico activo) {
+		ActivoTecnologicoView result = new ActivoTecnologicoView();
+		result.setCategoria(activo.getCategoria().getNombre());
+		result.setCodPref(activo.getCategoria().getCodPref());
+		result.setCosto(activo.getCosto());
+		result.setCreacion(activo.getCreacion());
+		result.setEstado(activo.getEstadoProducto().getDescripcion());
+		result.setFolio(activo.getFolio());
+		result.setIdProducto(activo.getIdProducto());
+		result.setMarca(activo.getMarca());
+		result.setSerie(activo.getSerie());
+		
+		return result;
+	}
 	
 	private void validarDatosEntrada(ActivoTecnologico activo, boolean esAlta) 
 	{
