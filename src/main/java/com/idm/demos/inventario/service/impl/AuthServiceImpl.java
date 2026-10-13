@@ -63,7 +63,13 @@ public class AuthServiceImpl implements AuthService {
 		Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado."));
 		
-		String token = jwtUtil.generarToken(idUsuario);
+        List<SimpleGrantedAuthority> authorities = usuario.getRol().getAcciones().stream()
+                .map(accion -> new SimpleGrantedAuthority(accion.getNombre()))
+                .collect(Collectors.toList());
+		
+		UserDetails user = new User(idUsuario, "", authorities);
+		
+		String token = jwtUtil.generarToken(user);
 		String refreshToken  = jwtUtil.generarRefreshToken(idUsuario);
 		
 		Sesion sesion = new Sesion();
@@ -93,7 +99,17 @@ public class AuthServiceImpl implements AuthService {
 		Sesion sesion = sesionRepository.findByRefreshTokenAndEstado(refreshToken, 1)
                 .orElseThrow(() -> new SecurityException("Sesión inválida o revocada."));
 		
-		String nuevoToken = jwtUtil.generarToken(sesion.getUsuario().getIdUsuario());
+		if (sesion.getExpiracion().isBefore(LocalDateTime.now())) {
+            throw new SecurityException("La sesión ha expirado.");
+        }
+		
+		Usuario usuario = sesion.getUsuario();
+        List<SimpleGrantedAuthority> authorities = usuario.getRol().getAcciones().stream()
+                .map(accion -> new SimpleGrantedAuthority(accion.getNombre()))
+                .collect(Collectors.toList());
+        UserDetails user = new User(usuario.getIdUsuario(), "", authorities);
+		
+		String nuevoToken = jwtUtil.generarToken(user);
 		sesion.setToken(nuevoToken);
         sesionRepository.save(sesion);
         

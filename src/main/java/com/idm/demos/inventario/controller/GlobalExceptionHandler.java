@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     }
     
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleSecurityException(UsernameNotFoundException ex) {
+    public ResponseEntity<ApiResponse<Void>> handleUserNotFoundException(UsernameNotFoundException ex) {
         ApiResponse<Void> response = new ApiResponse<>(
                 HttpStatus.FORBIDDEN.value(),
                 //ex.getMessage(),

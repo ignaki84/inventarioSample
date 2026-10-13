@@ -69,9 +69,10 @@ class AuthServiceImplTest {
 
     @Test
     void crearSesion_Exito_RetornaTokensYGuardaEnBD() {
+    	
         // Arrange
         when(usuarioRepository.findById("USR-TEST")).thenReturn(Optional.of(usuarioSimulado));
-        when(jwtUtil.generarToken("USR-TEST")).thenReturn("nuevo.token.corto");
+        when(jwtUtil.generarToken(any(UserDetails.class))).thenReturn("nuevo.token.corto");
         when(jwtUtil.generarRefreshToken("USR-TEST")).thenReturn("nuevo.token.largo");
         when(sesionRepository.save(any(Sesion.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -155,7 +156,7 @@ class AuthServiceImplTest {
         when(jwtUtil.validarToken(refreshToken)).thenReturn(true);
         when(sesionRepository.findByRefreshTokenAndEstado(refreshToken, 1))
                 .thenReturn(Optional.of(sesionSimulada));
-        when(jwtUtil.generarToken("USR-TEST")).thenReturn("nuevo.token.corto.renovado");
+        when(jwtUtil.generarToken(any(UserDetails.class))).thenReturn("nuevo.token.corto.renovado");
 
         // Act
         String nuevoToken = authService.refrescarSesion(refreshToken, tokenAnterior);

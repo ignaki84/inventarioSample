@@ -2,9 +2,15 @@ package com.idm.demos.inventario.security;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -27,14 +33,15 @@ public class JwtUtil {
     @Value("${jwt.issuer}")
     private String issuer;
     
-    public String generarToken(String idUsuario) {
-    	return Jwts.builder()
-                .setSubject(idUsuario)
-                .setIssuer(issuer)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
+    public String generarToken(UserDetails userDetails) {
+    	Map<String, Object> extraClaims = new HashMap<>();
+    	
+    	List<String> permisos = userDetails.getAuthorities().stream()
+    			.map(GrantedAuthority::getAuthority)
+    			.collect(Collectors.toList());
+    	extraClaims.put("permisos", permisos);
+    	
+    	return buildToken(extraClaims,userDetails);
     }
     
     public String generarRefreshToken(String idUsuario) {
@@ -58,6 +65,17 @@ public class JwtUtil {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    	return Jwts.builder()
+        .setSubject(userDetails.getUsername())
+        .setIssuer(issuer)
+        .setIssuedAt(new Date(System.currentTimeMillis()))
+        .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+        .addClaims(extraClaims)
+        .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+        .compact();
     }
 
     private <T> T extraerClaim(String token, Function<Claims, T> claimsResolver) {
