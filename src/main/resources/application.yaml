@@ -1,12 +1,12 @@
 server:
   port: 8443
-  ssl:
-    enabled: true
+  #ssl:
+   # enabled: true
     # Requiere generar un certificado, ej: keytool -genkeypair -alias inventario -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore keystore.p12 -validity 3650
-    key-store: classpath:keystore.p12
-    key-store-password: MyKey2025
-    key-store-type: PKCS12
-    key-alias: https_cert
+    #key-store: classpath:keystore.p12
+    #key-store-password: MyKey2025
+    #key-store-type: PKCS12
+    #key-alias: https_cert
 
 spring:
   application:
@@ -33,4 +33,9 @@ jwt:
   refresh-expiration-ms: 86400000 # 24 horas
   issuer: com.idm.demos.inventario
 
+#Configuracion de cors permitidos
+cors:
+  allowed-origins:
+     - "http://localhost:4200"
+     - "http://127.0.0.1:4200"
       

@@ -113,10 +113,20 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         		&& activoRepo.existsBySerie(requestDto.getSerie()) ) {
             throw new IllegalArgumentException("El nuevo número de serie ya se encuentra registrado en otro activo.");
         }
-
+        
+        CatEstadoProducto edo = null;
+        if( existente.getEstadoProducto().getEstatus()!=requestDto.getIdEstado()) {
+        	edo = edoRepo.findById(requestDto.getIdEstado())
+        		.orElseThrow(() -> new IllegalArgumentException("Estado no encontrado"));
+        }
+        
+        
         existente.setSerie(requestDto.getSerie());
         existente.setMarca(requestDto.getMarca());
         existente.setCosto(requestDto.getCosto());
+        
+        if(existente.getEstadoProducto().getEstatus() != BAJA)
+        	existente.setEstadoProducto(edo);
         
         validarDatosEntrada(existente, false);
         
@@ -148,7 +158,7 @@ public class ActivoTecnologicoServiceImpl implements ActivoTecnologicoService {
         registrarHistorial(activo, estadoAnterior, nuevoEstado, usuario, UPDATE_STAT);
         return buildActivoView(activo);
 	}
-
+//TODO: revisar la especificacion
 	@Override
     @Transactional(readOnly = true)
     public Page<ActivoTecnologicoView> buscarActivos(String serie, String marca, String estado, String categoria,

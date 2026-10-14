@@ -9,5 +9,5 @@ public class ActivoTecUpdateRequestDTO {
 	private String serie;
     private String marca;
     private BigDecimal costo;
-
+    private Integer idEstado;
 }

@@ -16,7 +16,7 @@ import com.idm.demos.inventario.service.CatalogoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/apiV1/catalogos")
+@RequestMapping("/api/v1/catalogos")
 @RequiredArgsConstructor
 public class CatalogoController {
 	private final CatalogoService catalogoService;
